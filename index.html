@@ -82,7 +82,7 @@
   </div>
 
   <!-- Canvas 2D caché de 64x64 pixels obligatoire pour le format Minecraft -->
-  <canvas id="skinCanvas" width="64" height="64"></canvas>
+  <canvas id="skinCanvas" width="256" height="256"></canvas>
 
   <script>
     // 1. Initialisation du Canvas 2D (Masqué)
@@ -90,8 +90,8 @@
     const ctx = canvas.getContext('2d');
 
     const offscreenCanvas = document.createElement('canvas');
-    offscreenCanvas.width = 64;
-    offscreenCanvas.height = 64;
+    offscreenCanvas.width = 256;
+    offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
     // 2. Initialisation du visualiseur 3D
@@ -120,11 +120,11 @@
 
     function colorizeImage(img, hexColor) {
       if (!img) return null;
-      offscreenCtx.clearRect(0, 0, 64, 64);
+      offscreenCtx.clearRect(0, 0, 256, 256);
       offscreenCtx.drawImage(img, 0, 0);
       offscreenCtx.globalCompositeOperation = 'multiply';
       offscreenCtx.fillStyle = hexColor;
-      offscreenCtx.fillRect(0, 0, 64, 64);
+      offscreenCtx.fillRect(0, 0, 256, 256);
       offscreenCtx.globalCompositeOperation = 'destination-in';
       offscreenCtx.drawImage(img, 0, 0);
       offscreenCtx.globalCompositeOperation = 'source-over';
@@ -133,7 +133,7 @@
 
     async function updateSkin() {
       // Effacer le patron 2D
-      ctx.clearRect(0, 0, 64, 64);
+      ctx.clearRect(0, 0, 256, 256);
 
       const baseSrc = document.getElementById('base').value;
       const eyesSrc = document.getElementById('eyes').value;
