@@ -10,6 +10,7 @@
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
     #skinCanvas { display: none; }
     
+    /* Conteneur 3D agrandi */
     #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
     #skin_container:active { cursor: grabbing; }
     
@@ -75,7 +76,6 @@
     </div>
   </div>
 
-  <!-- Un seul Canvas HD principal en 256x256 -->
   <canvas id="skinCanvas" width="256" height="256"></canvas>
 
   <script>
@@ -87,11 +87,16 @@
     offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
+    // Canvas 3D agrandi à 450x550px
     let skinViewer = new skinview3d.SkinViewer({
       canvas: document.getElementById("skin_container"),
-      width: 300,
-      height: 400
+      width: 450,
+      height: 550
     });
+
+    // Ajustement du zoom et de la hauteur de caméra
+    skinViewer.zoom = 0.85;
+    skinViewer.camera.position.set(0, 10, 40);
 
     let control = skinview3d.createOrbitControls(skinViewer);
 
@@ -144,10 +149,13 @@
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
 
-      // Chargement direct du dataURL HD 256x256
       skinViewer.loadSkin(canvas.toDataURL("image/png")).then(() => {
-        // Amélioration du rendu texture HD
-        if (skinViewer.playerObject && skinViewer.playerObject.skin) {
+        if (skinViewer.playerObject) {
+          // Activation explicite de la seconde couche 3D (relief)
+          skinViewer.playerObject.skin.innerLayer.visible = true;
+          skinViewer.playerObject.skin.outerLayer.visible = true;
+
+          // Conservation de la netteté HD
           const texture = skinViewer.playerObject.skin.map;
           if (texture) {
             texture.magFilter = skinview3d.THREE ? skinview3d.THREE.LinearFilter : 1006;
