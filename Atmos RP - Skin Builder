@@ -18,14 +18,14 @@
   <div class="controls">
     <label>Corps :</label>
     <select id="base" onchange="updateSkin()">
-      <option value="assets/base_steve.png">Steve</option>
+      <option value="assets/Corps/caro.png">Steve</option>
     </select>
 
     <label>Cheveux :</label>
     <select id="hair" onchange="updateSkin()">
       <option value="">Aucun</option>
-      <option value="assets/cheveux_bruns.png">Bruns</option>
-      <option value="assets/cheveux_blonds.png">Blonds</option>
+      <option value="assets/603673c08fe674242412a585_skin_layer.png">Bruns</option>
+      <option value="assets/603673c08fe674242412a588_skin_layer.png">Blonds</option>
     </select>
 
     <label>Tenue :</label>
@@ -35,8 +35,18 @@
     </select>
   </div>
 
+    <label>Yeux :</label>
+    <select id="eyes" onchange="updateSkin()">
+      <option value="">Aucune</option>
+      <option value="assets/YeuxBleu.png">Yeux Bleu</option>
+      <option value="assets/YeuxBrun.png">Yeux Brun</option>
+      <option value="assets/YeuxVert.png">Yeux Vert</option>
+
+    </select>
+  </div>
+
   <!-- Le Canvas 64x64 où se produit la magie -->
-  <canvas id="skinCanvas" width="64" height="64"></canvas>
+  <canvas id="skinCanvas" width="256" height="256"></canvas>
 
   <br><br>
   <!-- Bouton de téléchargement -->
@@ -65,12 +75,15 @@
       const baseSrc = document.getElementById('base').value;
       const hairSrc = document.getElementById('hair').value;
       const outfitSrc = document.getElementById('outfit').value;
+      const eyesSrc = document.getElementById('eyes').value;
+
 
       // Charger les images sélectionnées
       const images = await Promise.all([
         loadImage(baseSrc),
         loadImage(hairSrc),
-        loadImage(outfitSrc)
+        loadImage(outfitSrc),
+        loadImage(eyesSrc)
       ]);
 
       // Dessiner chaque calque l'un sur l'autre (ordre important !)
