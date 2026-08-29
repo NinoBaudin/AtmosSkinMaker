@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Atmos RP - Skin Builder</title>
+  <style>
+    body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
+    canvas { border: 2px solid #555; image-rendering: pixelated; width: 256px; height: 256px; }
+    .controls { margin: 20px 0; }
+    select, button { padding: 10px; margin: 5px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+  <h1>Créateur de Skin - Atmos RP</h1>
+
+  <!-- Zone de sélection des calques -->
+  <div class="controls">
+    <label>Corps :</label>
+    <select id="base" onchange="updateSkin()">
+      <option value="assets/base_steve.png">Steve</option>
+    </select>
+
+    <label>Cheveux :</label>
+    <select id="hair" onchange="updateSkin()">
+      <option value="">Aucun</option>
+      <option value="assets/cheveux_bruns.png">Bruns</option>
+      <option value="assets/cheveux_blonds.png">Blonds</option>
+    </select>
+
+    <label>Tenue :</label>
+    <select id="outfit" onchange="updateSkin()">
+      <option value="">Aucune</option>
+      <option value="assets/tenue_paysan.png">Tenue Paysan</option>
+    </select>
+  </div>
+
+  <!-- Le Canvas 64x64 où se produit la magie -->
+  <canvas id="skinCanvas" width="64" height="64"></canvas>
+
+  <br><br>
+  <!-- Bouton de téléchargement -->
+  <button onclick="downloadSkin()">Télécharger mon Skin (.png)</button>
+
+  <script>
+    const canvas = document.getElementById('skinCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function loadImage(src) {
+      return new Promise((resolve) => {
+        if (!src) return resolve(null);
+        const img = new Image();
+        img.crossOrigin = "Anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    async function updateSkin() {
+      // Effacer le canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Récupérer les sélections
+      const baseSrc = document.getElementById('base').value;
+      const hairSrc = document.getElementById('hair').value;
+      const outfitSrc = document.getElementById('outfit').value;
+
+      // Charger les images sélectionnées
+      const images = await Promise.all([
+        loadImage(baseSrc),
+        loadImage(hairSrc),
+        loadImage(outfitSrc)
+      ]);
+
+      // Dessiner chaque calque l'un sur l'autre (ordre important !)
+      images.forEach(img => {
+        if (img) ctx.drawImage(img, 0, 0);
+      });
+    }
+
+    function downloadSkin() {
+      const link = document.createElement('a');
+      link.download = 'mon_skin_atmos.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Premier rendu au chargement
+    updateSkin();
+  </script>
+</body>
+</html>
