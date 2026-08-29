@@ -4,16 +4,13 @@
   <meta charset="UTF-8">
   <title>Atmos RP - Skin Builder 3D</title>
   
-  <!-- Inscription de la bibliothèque 3D Minecraft -->
   <script src="https://unpkg.com/skinview3d@3.0.0/dist/skinview3d.bundle.js"></script>
 
   <style>
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
     
-    /* Le Canvas 2D est désormais masqué mais reste utilisé pour la fusion */
-    #skinCanvas { display: none; }
+    #skinCanvas, #exportCanvas { display: none; }
     
-    /* Style pour le conteneur 3D */
     #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
     #skin_container:active { cursor: grabbing; }
 
@@ -28,7 +25,6 @@
   <h1>Créateur de Skin 3D - Atmos RP</h1>
 
   <div class="layout">
-    <!-- Colonne des contrôles -->
     <div>
       <div class="controls">
         <label>Corps :</label>
@@ -75,33 +71,36 @@
       <button onclick="downloadSkin()">Télécharger mon Skin (.png)</button>
     </div>
 
-    <!-- Zone de rendu 3D -->
     <div>
       <canvas id="skin_container"></canvas>
     </div>
   </div>
 
-  <!-- Canvas 2D caché de 64x64 pixels obligatoire pour le format Minecraft -->
+  <!-- Canvas de travail en 256x256 -->
   <canvas id="skinCanvas" width="256" height="256"></canvas>
+  <!-- Canvas d'exportation au format standard Minecraft 64x64 -->
+  <canvas id="exportCanvas" width="64" height="64"></canvas>
 
   <script>
-    // 1. Initialisation du Canvas 2D (Masqué)
     const canvas = document.getElementById('skinCanvas');
     const ctx = canvas.getContext('2d');
+
+    const exportCanvas = document.getElementById('exportCanvas');
+    const exportCtx = exportCanvas.getContext('2d');
+    // Désactive le flou lors de la réduction de taille pour garder le style pixel
+    exportCtx.imageSmoothingEnabled = false;
 
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 256;
     offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
-    // 2. Initialisation du visualiseur 3D
     let skinViewer = new skinview3d.SkinViewer({
       canvas: document.getElementById("skin_container"),
       width: 300,
       height: 400
     });
 
-    // Activation du contrôle de la caméra à la souris (rotation)
     let control = skinview3d.createOrbitControls(skinViewer);
     control.enableRotate = true;
     control.enableZoom = true;
@@ -132,7 +131,6 @@
     }
 
     async function updateSkin() {
-      // Effacer le patron 2D
       ctx.clearRect(0, 0, 256, 256);
 
       const baseSrc = document.getElementById('base').value;
@@ -148,7 +146,6 @@
         loadImage(outfitSrc)
       ]);
 
-      // Dessin des calques dans l'ordre 2D
       if (baseImg) ctx.drawImage(baseImg, 0, 0);
       if (eyesImg) ctx.drawImage(eyesImg, 0, 0);
 
@@ -159,19 +156,23 @@
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
 
-      // Met à jour la texture du modèle 3D
-      const dataUrl = canvas.toDataURL('image/png');
+      // Redimensionnement du rendu 256x256 vers le format 64x64 valide pour Minecraft & skinview3d
+      exportCtx.clearRect(0, 0, 64, 64);
+      exportCtx.drawImage(canvas, 0, 0, 64, 64);
+
+      // Chargement de la texture 64x64 valide dans le visualiseur 3D
+      const dataUrl = exportCanvas.toDataURL('image/png');
       skinViewer.loadSkin(dataUrl);
     }
 
     function downloadSkin() {
       const link = document.createElement('a');
       link.download = 'mon_skin_atmos.png';
-      link.href = canvas.toDataURL('image/png');
+      // Téléchargement au format 64x64 lisible par Minecraft
+      link.href = exportCanvas.toDataURL('image/png');
       link.click();
     }
 
-    // Premier rendu au chargement
     updateSkin();
   </script>
 </body>
