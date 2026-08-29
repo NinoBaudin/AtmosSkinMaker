@@ -4,15 +4,13 @@
   <meta charset="UTF-8">
   <title>Atmos RP - Skin Builder 3D HD</title>
   
-  <!-- Une seule bibliothèque chargée : skinview3d bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.0/dist/skinview3d.bundle.js"></script>
+  <script src="https://bs-community.github.io/skinview3d/js/skinview3d.bundle.js"></script>
 
   <style>
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
-    #skinCanvas { display: none; }
+    #skinCanvas, #exportCanvas { display: none; }
     
-    /* Le conteneur doit être une div avec dimensions explicites */
-    #skin_container { width: 300px; height: 400px; border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
+    #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
     #skin_container:active { cursor: grabbing; }
     
     .controls { margin: 15px 0; }
@@ -72,29 +70,34 @@
       <button onclick="downloadSkin()">Télécharger mon Skin HD (.png)</button>
     </div>
 
-    <!-- Doit être une div et non un canvas -->
-    <div id="skin_container"></div>
+    <div>
+      <canvas id="skin_container"></canvas>
+    </div>
   </div>
 
   <canvas id="skinCanvas" width="256" height="256"></canvas>
+  <canvas id="exportCanvas" width="64" height="64"></canvas>
 
   <script>
     const canvas = document.getElementById('skinCanvas');
     const ctx = canvas.getContext('2d');
+
+    const exportCanvas = document.getElementById('exportCanvas');
+    const exportCtx = exportCanvas.getContext('2d');
+    exportCtx.imageSmoothingEnabled = false;
 
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 256;
     offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
-    // Initialisation du viewer 3D sur le conteneur Div
+    // Initialisation directe sur le canvas HTML5
     let skinViewer = new skinview3d.SkinViewer({
-      div: document.getElementById("skin_container"),
+      canvas: document.getElementById("skin_container"),
       width: 300,
       height: 400
     });
 
-    // Activation de la rotation libre à la souris
     let control = skinview3d.createOrbitControls(skinViewer);
 
     function loadImage(src) {
@@ -146,13 +149,17 @@
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
 
-      // Chargement direct de la texture du Canvas dans le viewer 3D
-      skinViewer.loadSkin(canvas.toDataURL("image/png"));
+      // Copie vers le canvas d'affichage 3D
+      exportCtx.clearRect(0, 0, 64, 64);
+      exportCtx.drawImage(canvas, 0, 0, 64, 64);
+
+      skinViewer.loadSkin(exportCanvas.toDataURL("image/png"));
     }
 
     function downloadSkin() {
       const link = document.createElement('a');
       link.download = 'mon_skin_atmos_hd.png';
+      // Téléchargement du fichier original HD en 256x256
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
