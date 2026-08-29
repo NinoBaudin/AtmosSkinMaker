@@ -8,7 +8,7 @@
 
   <style>
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
-    #skinCanvas, #exportCanvas { display: none; }
+    #skinCanvas { display: none; }
     
     #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
     #skin_container:active { cursor: grabbing; }
@@ -75,23 +75,18 @@
     </div>
   </div>
 
+  <!-- Un seul Canvas HD principal en 256x256 -->
   <canvas id="skinCanvas" width="256" height="256"></canvas>
-  <canvas id="exportCanvas" width="64" height="64"></canvas>
 
   <script>
     const canvas = document.getElementById('skinCanvas');
     const ctx = canvas.getContext('2d');
-
-    const exportCanvas = document.getElementById('exportCanvas');
-    const exportCtx = exportCanvas.getContext('2d');
-    exportCtx.imageSmoothingEnabled = false;
 
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 256;
     offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
-    // Initialisation directe sur le canvas HTML5
     let skinViewer = new skinview3d.SkinViewer({
       canvas: document.getElementById("skin_container"),
       width: 300,
@@ -149,17 +144,23 @@
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
 
-      // Copie vers le canvas d'affichage 3D
-      exportCtx.clearRect(0, 0, 64, 64);
-      exportCtx.drawImage(canvas, 0, 0, 64, 64);
-
-      skinViewer.loadSkin(exportCanvas.toDataURL("image/png"));
+      // Chargement direct du dataURL HD 256x256
+      skinViewer.loadSkin(canvas.toDataURL("image/png")).then(() => {
+        // Amélioration du rendu texture HD
+        if (skinViewer.playerObject && skinViewer.playerObject.skin) {
+          const texture = skinViewer.playerObject.skin.map;
+          if (texture) {
+            texture.magFilter = skinview3d.THREE ? skinview3d.THREE.LinearFilter : 1006;
+            texture.minFilter = skinview3d.THREE ? skinview3d.THREE.LinearFilter : 1006;
+            texture.needsUpdate = true;
+          }
+        }
+      });
     }
 
     function downloadSkin() {
       const link = document.createElement('a');
       link.download = 'mon_skin_atmos_hd.png';
-      // Téléchargement du fichier original HD en 256x256
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
