@@ -18,30 +18,34 @@
   <div class="controls">
     <label>Corps :</label>
     <select id="base" onchange="updateSkin()">
-      <option value="assets/Corps/caro.png">Steve</option>
-      <option value="assets/Corps/caro02.png">Steve 2</option>
+      <option value="assets\Corps\caro.png">Steve</option>
+      <option value="assets\Corps\caro02.png">Steve 2</option>
     </select>
 
     <label>Cheveux :</label>
     <select id="hair" onchange="updateSkin()">
       <option value="">Aucun</option>
-      <option value="assets/Cheveux/603673c08fe674242412a585_skin_layer.png">Bruns</option>
-      <option value="assets/Cheveux/603673c08fe674242412a588_skin_layer.png">Blonds</option>
+      <option value="assets\Cheveux\01.png">Bruns</option>
+      <option value="assets\Cheveux\02.png">Blonds</option>
+      <option value="assets\Cheveux\03.png">BrunsZ</option>
+      <option value="assets\Cheveux\04.png">BlondsW</option>
     </select>
 
     <label>Tenue :</label>
     <select id="outfit" onchange="updateSkin()">
       <option value="">Aucune</option>
-      <option value="assets/tenue_paysan.png">Tenue Paysan</option>
+      <option value="assets\Tenue\fourrure.png">Tenue Fourrure</option>
+      <option value="assets\Tenue\AugusteManteauDelave.png">Tenue Manteau</option>
+
     </select>
   </div>
 
     <label>Yeux :</label>
     <select id="eyes" onchange="updateSkin()">
       <option value="">Aucune</option>
-      <option value="assets/Yeux/YeuxBleu.png">Yeux Bleu</option>
-      <option value="assets/Yeux/YeuxBrun.png">Yeux Brun</option>
-      <option value="assets/Yeux/YeuxVert.png">Yeux Vert</option>
+      <option value="assets\Yeux\YeuxBleu.png">Yeux Bleu</option>
+      <option value="assets\Yeux\YeuxBrun.png">Yeux Brun</option>
+      <option value="assets\Yeux\YeuxVert.png">Yeux Vert</option>
 
     </select>
   </div>
