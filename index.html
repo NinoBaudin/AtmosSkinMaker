@@ -2,78 +2,110 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Atmos RP - Skin Builder</title>
+  <title>Atmos RP - Skin Builder 3D</title>
+  
+  <!-- Inscription de la bibliothèque 3D Minecraft -->
+  <script src="https://unpkg.com/skinview3d@3.0.0/dist/skinview3d.bundle.js"></script>
+
   <style>
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
-    canvas { border: 2px solid #555; image-rendering: pixelated; width: 256px; height: 256px; }
-    .controls { margin: 20px 0; }
+    
+    /* Le Canvas 2D est désormais masqué mais reste utilisé pour la fusion */
+    #skinCanvas { display: none; }
+    
+    /* Style pour le conteneur 3D */
+    #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
+    #skin_container:active { cursor: grabbing; }
+
+    .controls { margin: 15px 0; }
     select, button, input[type="color"] { padding: 10px; margin: 5px; font-size: 16px; vertical-align: middle; }
     input[type="color"] { height: 42px; width: 60px; border: none; cursor: pointer; background: none; }
+    .layout { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 30px; margin-top: 20px; }
   </style>
 </head>
 <body>
 
-  <h1>Créateur de Skin - Atmos RP</h1>
+  <h1>Créateur de Skin 3D - Atmos RP</h1>
 
-  <!-- Zone de sélection des calques -->
-  <div class="controls">
-    <label>Corps :</label>
-    <select id="base" onchange="updateSkin()">
-      <option value="assets/Corps/caro.png">Steve</option>
-      <option value="assets/Corps/caro02.png">Steve 2</option>
-    </select>
+  <div class="layout">
+    <!-- Colonne des contrôles -->
+    <div>
+      <div class="controls">
+        <label>Corps :</label>
+        <select id="base" onchange="updateSkin()">
+          <option value="assets/Corps/caro.png">Steve</option>
+          <option value="assets/Corps/caro02.png">Steve 2</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <label>Cheveux :</label>
+        <select id="hair" onchange="updateSkin()">
+          <option value="">Aucun</option>
+          <option value="assets/Cheveux/cheveux1.png">Cheveux 01</option>
+          <option value="assets/Cheveux/cheveux2.png">Cheveux 02</option>
+          <option value="assets/Cheveux/cheveux3.png">Cheveux 03</option>
+          <option value="assets/Cheveux/cheveux4.png">Cheveux 04</option>
+        </select>
+        
+        <label for="hairColor">Couleur :</label>
+        <input type="color" id="hairColor" value="#8b5a2b" oninput="updateSkin()">
+      </div>
+
+      <div class="controls">
+        <label>Tenue :</label>
+        <select id="outfit" onchange="updateSkin()">
+          <option value="">Aucune</option>
+          <option value="assets/Tenue/fourrure.png">Fourrure</option>
+          <option value="assets/Tenue/AugusteManteauDelave.png">Auguste Manteau Delave</option>
+        </select>
+      </div>
+
+      <div class="controls">
+        <label>Yeux :</label>
+        <select id="eyes" onchange="updateSkin()">
+          <option value="">Aucune</option>
+          <option value="assets/Yeux/YeuxBleu.png">Yeux Bleu</option>
+          <option value="assets/Yeux/YeuxBrun.png">Yeux Brun</option>
+          <option value="assets/Yeux/YeuxVert.png">Yeux Vert</option>
+        </select>
+      </div>
+
+      <br>
+      <button onclick="downloadSkin()">Télécharger mon Skin (.png)</button>
+    </div>
+
+    <!-- Zone de rendu 3D -->
+    <div>
+      <canvas id="skin_container"></canvas>
+    </div>
   </div>
 
-  <div class="controls">
-    <label>Cheveux :</label>
-    <select id="hair" onchange="updateSkin()">
-      <option value="">Aucun</option>
-      <option value="assets/Cheveux/cheveux1.png">Cheveux 01</option>
-      <option value="assets/Cheveux/cheveux2.png">Cheveux 02</option>
-      <option value="assets/Cheveux/cheveux3.png">Cheveux 03</option>
-      <option value="assets/Cheveux/cheveux4.png">Cheveux 04</option>
-    </select>
-    
-    <!-- Sélecteur de couleur pour les cheveux -->
-    <label for="hairColor">Couleur :</label>
-    <input type="color" id="hairColor" value="#8b5a2b" oninput="updateSkin()">
-  </div>
-
-  <div class="controls">
-    <label>Tenue :</label>
-    <select id="outfit" onchange="updateSkin()">
-      <option value="">Aucune</option>
-      <option value="assets/Tenue/fourrure.png">fourrure</option>
-      <option value="assets/Tenue/AugusteManteauDelave.png">Auguste Manteau Delave</option>
-    </select>
-  </div>
-
-  <div class="controls">
-    <label>Yeux :</label>
-    <select id="eyes" onchange="updateSkin()">
-      <option value="">Aucune</option>
-      <option value="assets/Yeux/YeuxBleu.png">Yeux Bleu</option>
-      <option value="assets/Yeux/YeuxBrun.png">Yeux Brun</option>
-      <option value="assets/Yeux/YeuxVert.png">Yeux Vert</option>
-    </select>
-  </div>
-
-  <!-- Le Canvas principal -->
-  <canvas id="skinCanvas" width="256" height="256"></canvas>
-
-  <br><br>
-  <!-- Bouton de téléchargement -->
-  <button onclick="downloadSkin()">Télécharger mon Skin (.png)</button>
+  <!-- Canvas 2D caché de 64x64 pixels obligatoire pour le format Minecraft -->
+  <canvas id="skinCanvas" width="64" height="64"></canvas>
 
   <script>
+    // 1. Initialisation du Canvas 2D (Masqué)
     const canvas = document.getElementById('skinCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Canvas hors-écran temporaire pour la coloration
     const offscreenCanvas = document.createElement('canvas');
-    offscreenCanvas.width = canvas.width;
-    offscreenCanvas.height = canvas.height;
+    offscreenCanvas.width = 64;
+    offscreenCanvas.height = 64;
     const offscreenCtx = offscreenCanvas.getContext('2d');
+
+    // 2. Initialisation du visualiseur 3D
+    let skinViewer = new skinview3d.SkinViewer({
+      canvas: document.getElementById("skin_container"),
+      width: 300,
+      height: 400
+    });
+
+    // Activation du contrôle de la caméra à la souris (rotation)
+    let control = skinview3d.createOrbitControls(skinViewer);
+    control.enableRotate = true;
+    control.enableZoom = true;
+    control.enablePan = false;
 
     function loadImage(src) {
       return new Promise((resolve) => {
@@ -86,43 +118,29 @@
       });
     }
 
-    // Fonction pour colorer une image en niveaux de gris
     function colorizeImage(img, hexColor) {
       if (!img) return null;
-
-      // Nettoyer le canvas hors-écran
-      offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-
-      // 1. Dessiner l'image originale en niveaux de gris
+      offscreenCtx.clearRect(0, 0, 64, 64);
       offscreenCtx.drawImage(img, 0, 0);
-
-      // 2. Remplir avec la couleur choisie en mode "multiply" pour teinter
       offscreenCtx.globalCompositeOperation = 'multiply';
       offscreenCtx.fillStyle = hexColor;
-      offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-
-      // 3. Ne conserver la couleur que là où l'image originale n'était pas transparente
+      offscreenCtx.fillRect(0, 0, 64, 64);
       offscreenCtx.globalCompositeOperation = 'destination-in';
       offscreenCtx.drawImage(img, 0, 0);
-
-      // Réinitialiser le mode de fusion
       offscreenCtx.globalCompositeOperation = 'source-over';
-
       return offscreenCanvas;
     }
 
     async function updateSkin() {
-      // Effacer le canvas principal
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Effacer le patron 2D
+      ctx.clearRect(0, 0, 64, 64);
 
-      // Récupérer les sources
       const baseSrc = document.getElementById('base').value;
       const eyesSrc = document.getElementById('eyes').value;
       const hairSrc = document.getElementById('hair').value;
       const outfitSrc = document.getElementById('outfit').value;
       const hairColor = document.getElementById('hairColor').value;
 
-      // Charger les images
       const [baseImg, eyesImg, hairImg, outfitImg] = await Promise.all([
         loadImage(baseSrc),
         loadImage(eyesSrc),
@@ -130,17 +148,20 @@
         loadImage(outfitSrc)
       ]);
 
-      // Dessiner dans l'ordre
+      // Dessin des calques dans l'ordre 2D
       if (baseImg) ctx.drawImage(baseImg, 0, 0);
       if (eyesImg) ctx.drawImage(eyesImg, 0, 0);
 
-      // Appliquer la couleur sur les cheveux avant de les dessiner
       if (hairImg) {
         const coloredHair = colorizeImage(hairImg, hairColor);
         ctx.drawImage(coloredHair, 0, 0);
       }
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
+
+      // Met à jour la texture du modèle 3D
+      const dataUrl = canvas.toDataURL('image/png');
+      skinViewer.loadSkin(dataUrl);
     }
 
     function downloadSkin() {
