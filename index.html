@@ -18,30 +18,34 @@
   <div class="controls">
     <label>Corps :</label>
     <select id="base" onchange="updateSkin()">
-      <option value="assets/Corps/caro.png">Steve</option>
-      <option value="assets/Corps/caro02.png">Steve 2</option>
+      <option value="assets\Corps\caro.png">Steve</option>
+      <option value="assets\Corps\caro02.png">Steve 2</option>
     </select>
 
     <label>Cheveux :</label>
     <select id="hair" onchange="updateSkin()">
       <option value="">Aucun</option>
-      <option value="assets/Cheveux/603673c08fe674242412a585_skin_layer.png">Bruns</option>
-      <option value="assets/Cheveux/603673c08fe674242412a588_skin_layer.png">Blonds</option>
+      <option value="assets\Cheveux\cheveux1.png">Cheveux 01</option>
+      <option value="assets\Cheveux\cheveux2.png">Cheveux 02</option>
+      <option value="assets\Cheveux\cheveux3.png">Cheveux 03</option>
+      <option value="assets\Cheveux\cheveux4.png">Cheveux 04</option>
     </select>
 
     <label>Tenue :</label>
     <select id="outfit" onchange="updateSkin()">
       <option value="">Aucune</option>
-      <option value="assets/tenue_paysan.png">Tenue Paysan</option>
+      <option value="assets\Tenue\fourrure.png">fourrure</option>
+      <option value="assets\Tenue\AugusteManteauDelave.png">Auguste Manteau Delave</option>
+
     </select>
   </div>
 
     <label>Yeux :</label>
     <select id="eyes" onchange="updateSkin()">
       <option value="">Aucune</option>
-      <option value="assets/Yeux/YeuxBleu.png">Yeux Bleu</option>
-      <option value="assets/Yeux/YeuxBrun.png">Yeux Brun</option>
-      <option value="assets/Yeux/YeuxVert.png">Yeux Vert</option>
+      <option value="assets\Yeux\YeuxBleu.png">Yeux Bleu</option>
+      <option value="assets\Yeux\YeuxBrun.png">Yeux Brun</option>
+      <option value="assets\Yeux\YeuxVert.png">Yeux Vert</option>
 
     </select>
   </div>
@@ -75,16 +79,15 @@
       // 1. Récupérer les URLs dans le BON ORDRE (du plus profond au plus superficiel)
       const baseSrc = document.getElementById('base').value;
       const eyesSrc = document.getElementById('eyes').value;
-      const outfitSrc = document.getElementById('outfit').value;
       const hairSrc = document.getElementById('hair').value;
-
+      const outfitSrc = document.getElementById('outfit').value;
 
       // Charger les images sélectionnées
       const images = await Promise.all([
         loadImage(baseSrc),
         loadImage(eyesSrc),
-        loadImage(outfitSrc),
-        loadImage(hairSrc)
+        loadImage(hairSrc),
+        loadImage(outfitSrc)
       ]);
 
       // Dessiner chaque calque l'un sur l'autre (ordre important !)
