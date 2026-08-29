@@ -2,14 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Atmos RP - Skin Builder 3D</title>
+  <title>Atmos RP - Skin Builder 3D HD</title>
   
-  <script src="https://unpkg.com/skinview3d@3.0.0/dist/skinview3d.bundle.js"></script>
+  <!-- Mise à jour de la bibliothèque vers la version bundle universelle -->
+  <script src="https://cdn.jsdelivr.net/npm/skinview3d@3/dist/skinview3d.bundle.js"></script>
 
   <style>
     body { font-family: sans-serif; background: #1e1e1e; color: #fff; text-align: center; }
     
-    #skinCanvas, #exportCanvas { display: none; }
+    #skinCanvas { display: none; }
     
     #skin_container { border: 2px solid #555; background: #2a2a2a; border-radius: 8px; cursor: grab; }
     #skin_container:active { cursor: grabbing; }
@@ -22,7 +23,7 @@
 </head>
 <body>
 
-  <h1>Créateur de Skin 3D - Atmos RP</h1>
+  <h1>Créateur de Skin 3D HD - Atmos RP</h1>
 
   <div class="layout">
     <div>
@@ -68,7 +69,7 @@
       </div>
 
       <br>
-      <button onclick="downloadSkin()">Télécharger mon Skin (.png)</button>
+      <button onclick="downloadSkin()">Télécharger mon Skin HD (.png)</button>
     </div>
 
     <div>
@@ -76,30 +77,27 @@
     </div>
   </div>
 
-  <!-- Canvas de travail en 256x256 -->
+  <!-- Canvas unique en 256x256 -->
   <canvas id="skinCanvas" width="256" height="256"></canvas>
-  <!-- Canvas d'exportation au format standard Minecraft 64x64 -->
-  <canvas id="exportCanvas" width="64" height="64"></canvas>
 
   <script>
     const canvas = document.getElementById('skinCanvas');
     const ctx = canvas.getContext('2d');
-
-    const exportCanvas = document.getElementById('exportCanvas');
-    const exportCtx = exportCanvas.getContext('2d');
-    // Désactive le flou lors de la réduction de taille pour garder le style pixel
-    exportCtx.imageSmoothingEnabled = false;
 
     const offscreenCanvas = document.createElement('canvas');
     offscreenCanvas.width = 256;
     offscreenCanvas.height = 256;
     const offscreenCtx = offscreenCanvas.getContext('2d');
 
+    // Initialisation avec forçage du rendu des textures HD
     let skinViewer = new skinview3d.SkinViewer({
       canvas: document.getElementById("skin_container"),
       width: 300,
       height: 400
     });
+
+    // Optionnel : ajuste le type de modèle si vos skins HD utilisent des bras de 4px (default) ou 3px (alex)
+    skinViewer.playerObject.skin.modelType = "default";
 
     let control = skinview3d.createOrbitControls(skinViewer);
     control.enableRotate = true;
@@ -156,20 +154,15 @@
 
       if (outfitImg) ctx.drawImage(outfitImg, 0, 0);
 
-      // Redimensionnement du rendu 256x256 vers le format 64x64 valide pour Minecraft & skinview3d
-      exportCtx.clearRect(0, 0, 64, 64);
-      exportCtx.drawImage(canvas, 0, 0, 64, 64);
-
-      // Chargement de la texture 64x64 valide dans le visualiseur 3D
-      const dataUrl = exportCanvas.toDataURL('image/png');
+      // Chargement direct du Canvas 256x256 dans le viewer 3D
+      const dataUrl = canvas.toDataURL('image/png');
       skinViewer.loadSkin(dataUrl);
     }
 
     function downloadSkin() {
       const link = document.createElement('a');
-      link.download = 'mon_skin_atmos.png';
-      // Téléchargement au format 64x64 lisible par Minecraft
-      link.href = exportCanvas.toDataURL('image/png');
+      link.download = 'mon_skin_atmos_hd.png';
+      link.href = canvas.toDataURL('image/png');
       link.click();
     }
 
