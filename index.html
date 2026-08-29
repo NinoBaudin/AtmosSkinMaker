@@ -71,19 +71,19 @@
       // Effacer le canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Récupérer les sélections
+      // 1. Récupérer les URLs dans le BON ORDRE (du plus profond au plus superficiel)
       const baseSrc = document.getElementById('base').value;
-      const hairSrc = document.getElementById('hair').value;
-      const outfitSrc = document.getElementById('outfit').value;
       const eyesSrc = document.getElementById('eyes').value;
+      const outfitSrc = document.getElementById('outfit').value;
+      const hairSrc = document.getElementById('hair').value;
 
 
       // Charger les images sélectionnées
       const images = await Promise.all([
         loadImage(baseSrc),
-        loadImage(hairSrc),
+        loadImage(eyesSrc),
         loadImage(outfitSrc),
-        loadImage(eyesSrc)
+        loadImage(hairSrc)
       ]);
 
       // Dessiner chaque calque l'un sur l'autre (ordre important !)
